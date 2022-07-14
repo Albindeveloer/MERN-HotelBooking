@@ -11,7 +11,7 @@ const Featured = () => {
   return (
     
     <div className="featured">
-      {loading ? ("loading please wait") :
+      {loading ? ("loading please wait!!") :
         (<> 
       <div className="featuredItem">
         <img
