@@ -6,13 +6,24 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { DateRange } from "react-date-range";
 import SearchItem from "../../components/searchItem/SearchItem";
+import UseFetch from "../../hooks/UseFetch";
 
 const List = () => {
   const location = useLocation();
+  console.log("locationnn",location)
   const [destination, setDestination] = useState(location.state.destination);
   const [date, setDate] = useState(location.state.date);
   const [openDate, setOpenDate] = useState(false);
   const [options, setOptions] = useState(location.state.options);
+  const [min, setMin] = useState();
+  const [max, setMax] = useState();
+
+  const {data,loading,error,reFetch}=UseFetch(`http://localhost:8800/api/hotels?city=${destination}&min=${min || 0}&max=${max || 999}`)
+  console.log("hotels by city",data);
+
+  const handleClick =()=>{
+    reFetch();
+  }
 
   return (
     <div>
@@ -24,7 +35,7 @@ const List = () => {
             <h1 className="lsTitle">Search</h1>
             <div className="lsItem">
               <label>Destination</label>
-              <input placeholder={destination} type="text" />
+              <input placeholder={destination} onChange={e=> setDestination(e.target.value)} type="text" />
             </div>
             <div className="lsItem">
               <label>Check-in Date</label>
@@ -47,13 +58,13 @@ const List = () => {
                   <span className="lsOptionText">
                     Min price <small>per night</small>
                   </span>
-                  <input type="number" className="lsOptionInput" />
+                  <input type="number" onChange={(e)=>{setMin(e.target.value)}} className="lsOptionInput" />
                 </div>
                 <div className="lsOptionItem">
                   <span className="lsOptionText">
                     Max price <small>per night</small>
                   </span>
-                  <input type="number" className="lsOptionInput" />
+                  <input type="number" onChange={e=>setMax(e.target.value)} className="lsOptionInput" />
                 </div>
                 <div className="lsOptionItem">
                   <span className="lsOptionText">Adult</span>
@@ -84,18 +95,33 @@ const List = () => {
                 </div>
               </div>
             </div>
-            <button>Search</button>
+            <button onClick={handleClick}>Search</button>
           </div>
           <div className="listResult">
-            <SearchItem />
-            <SearchItem />
-            <SearchItem />
-            <SearchItem />
-            <SearchItem />
-            <SearchItem />
-            <SearchItem />
-            <SearchItem />
-            <SearchItem />
+
+            {
+              loading? "loading" : <>
+              {data?.length ? data.map(item=>(
+
+              <SearchItem item={item} key={item._id}/>
+              ))  :  <div className="bar error">No hotels in {destination} city</div>}
+
+              </>
+            }
+
+{/* this is original code from youtube, in above code i just add one more condition if array is empty */}
+
+            {/* {
+              loading? "loading" : <>
+              {data?.map(item=>(
+
+              <SearchItem item={item} key={item._id}/>
+              ))}
+
+              </>
+            } */}
+
+
           </div>
         </div>
       </div>

@@ -4,7 +4,7 @@ import "./featured.css";
 const Featured = () => {
 
   const {data,loading,error}=UseFetch("http://localhost:8800/api/hotels/countByCity?cities=paris,barca,france,england")
-  console.log("data is",data)
+  console.log("cities counts",data)
   
 
 
